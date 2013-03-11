@@ -62,19 +62,38 @@ class DependencyCompillerTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @covers FuelPHP\Migration\DependencyCompiller::addMigration
-	 * @covers FuelPHP\Migration\DependencyCompiller::getList
+	 * @expectedException FuelPHP\Migration\Exception\RecursiveDependency
 	 * @group  Migration
 	 */
 	public function testAddMigrationRecursive()
 	{
 		$this->object->addMigration('FuelPHP\Migration\MigrationRecursiveA');
-		
-		
-		$this->assertTrue(key_exists(
-			'FuelPHP\Migration\MigrationNoDeps', $this->object->getList()
-		));
-		$this->assertTrue(key_exists(
-			'FuelPHP\Migration\MigrationWithDeps', $this->object->getList()
-		));
 	}
+	
+	/**
+	 * @covers FuelPHP\Migration\DependencyCompiller::addMigration
+	 * @group  Migration
+	 */
+	public function testAddMigrationRecursiveStack()
+	{
+		$stack = array();
+		
+		try
+		{
+			$this->object->addMigration('FuelPHP\Migration\MigrationRecursiveA');
+		}
+		catch ( Exception\RecursiveDependency $exc )
+		{
+			$stack = $exc->getStack();
+		}
+		
+		$expected = array(
+			'FuelPHP\Migration\MigrationRecursiveA',
+			'FuelPHP\Migration\MigrationRecursiveB',
+			'FuelPHP\Migration\MigrationRecursiveC',
+		);
+		
+		$this->assertEquals($expected, $stack);
+	}
+	
 }

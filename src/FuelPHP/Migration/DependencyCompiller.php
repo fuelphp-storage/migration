@@ -11,6 +11,8 @@
 
 namespace FuelPHP\Migration;
 
+use FuelPHP\Migration\Exception\RecursiveDependency;
+
 /**
  * This class is responsable for keeping a list of migrations to run and
  * working out their dependencies.
@@ -42,7 +44,7 @@ class DependencyCompiller
 	 */
 	public function addMigration($migration)
 	{
-		if ( ! is_subclass_of($migration, 'FuelPHP\Migration\Migration') )
+		if ( !is_subclass_of($migration, 'FuelPHP\Migration\Migration') )
 		{
 			throw new \InvalidArgumentException($migration . ' should be a subclass of FuelPHP\Migration\Migration');
 		}
@@ -54,21 +56,29 @@ class DependencyCompiller
 		}
 
 		// Create an intance of the migration to store and poke for more info
+		$class = $migration;
 		$migration = new $migration;
 
 		//Add the migration to the run stack and the debug stack
-		$class = get_class($migration);
 		$this->runStack[$class] = $migration;
 		$this->debugStack[] = $class;
-		
+
 		//check for dependencies and add them too if not already added.
 		$dependencies = $migration->dependencies();
 
 		foreach ( $dependencies as $dependency )
 		{
+			//Check if the dependency has been added already
+			if ( $this->migrationIsInStack($dependency) )
+			{
+				$exception = new RecursiveDependency('Recursive dependency detected!');
+				$exception->setStack($this->debugStack);
+				throw $exception;
+			}
+
 			$this->addMigration($dependency);
 		}
-		
+
 		//Remove the class from the debug stack now that we are done with it
 		array_pop($this->debugStack);
 	}
@@ -82,7 +92,7 @@ class DependencyCompiller
 	{
 		return array_reverse($this->runStack);
 	}
-	
+
 	public function getDebugStack()
 	{
 		return $this->debugStack;
@@ -97,8 +107,18 @@ class DependencyCompiller
 	 */
 	public function shouldAddMigration($migration)
 	{
-		return ! array_key_exists($migration, $this->runStack) &&
-			! in_array($migration, $this->oldMigrations);
+		return !$this->migrationIsInStack($migration) &&
+			!$this->migrationHasBeenRun($migration);
+	}
+
+	public function migrationIsInStack($migration)
+	{
+		return array_key_exists($migration, $this->runStack);
+	}
+
+	public function migrationHasBeenRun($migration)
+	{
+		return in_array($migration, $this->oldMigrations);
 	}
 
 }
