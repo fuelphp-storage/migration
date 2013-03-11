@@ -23,9 +23,9 @@ class File extends Storage
 
 	protected $fileLocation = '';
 
-	public function __construct($fileLocation)
+	public function __construct($config)
 	{
-		$this->fileLocation = $fileLocation;
+		$this->fileLocation = $config['location'];
 	}
 
 	public function getPast()

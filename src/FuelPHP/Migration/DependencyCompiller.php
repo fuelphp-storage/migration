@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * Part of the FuelPHP framework.
+ *
+ * @package   FuelPHP\Migration
+ * @version   2.0
+ * @license   MIT License
+ * @copyright 2010 - 2013 Fuel Development Team
+ */
+
+namespace FuelPHP\Migration;
+
+/**
+ * This class is responsable for keeping a list of migrations to run and
+ * working out their dependencies.
+ *
+ * @package FuelPHP\Migration
+ * @since   2.0.0
+ * @author  Fuel Development Team
+ */
+class DependencyCompiller
+{
+
+	protected $runStack = array();
+	protected $debugStack = array();
+	protected $storage = null;
+	protected $oldMigrations = array();
+
+	public function __construct(Storage\Storage $storage)
+	{
+		$this->storage = $storage;
+		//Load the list of already run migrations
+		$this->oldMigrations = $this->storage->getPast();
+	}
+
+	/**
+	 * Adds a migration to run and any dependencies it might have.
+	 * 
+	 * @param  string $migration Full class name of the migration to add
+	 * @throws \InvalidArgumentException
+	 */
+	public function addMigration($migration)
+	{
+		if ( ! is_subclass_of($migration, 'FuelPHP\Migration\Migration') )
+		{
+			throw new \InvalidArgumentException($migration . ' should be a subclass of FuelPHP\Migration\Migration');
+		}
+
+		//Check if the migration has been run before
+		if ( ! $this->shouldAddMigration($migration) )
+		{
+			return;
+		}
+
+		// Create an intance of the migration to store and poke for more info
+		$migration = new $migration;
+
+		//Add the migration to the run stack and the debug stack
+		$class = get_class($migration);
+		$this->runStack[$class] = $migration;
+		$this->debugStack[] = $class;
+		
+		//check for dependencies and add them too if not already added.
+		$dependencies = $migration->dependencies();
+
+		foreach ( $dependencies as $dependency )
+		{
+			$this->addMigration($dependency);
+		}
+		
+		//Remove the class from the debug stack now that we are done with it
+		array_pop($this->debugStack);
+	}
+
+	/**
+	 * Returns a list of migrations to run in the order they should be run in.
+	 * 
+	 * @return array
+	 */
+	public function getList()
+	{
+		return array_reverse($this->runStack);
+	}
+	
+	public function getDebugStack()
+	{
+		return $this->debugStack;
+	}
+
+	/**
+	 * Returns true if the given migration is not already in the toRun list and
+	 * if it has not already been run in the past.
+	 * 
+	 * @param  string $migration
+	 * @return boolean
+	 */
+	public function shouldAddMigration($migration)
+	{
+		return ! array_key_exists($migration, $this->runStack) &&
+			! in_array($migration, $this->oldMigrations);
+	}
+
+}
