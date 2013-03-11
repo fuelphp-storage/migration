@@ -20,9 +20,9 @@ namespace FuelPHP\Migration\Storage;
  */
 abstract class Storage
 {
-	
+
 	protected $newMigrations = array();
-	
+
 	/**
 	 * Adds a string to be saved.
 	 * 
@@ -34,7 +34,7 @@ abstract class Storage
 		$this->newMigrations[$string] = $string;
 		return $this;
 	}
-	
+
 	/**
 	 * Removes a string
 	 * 
@@ -46,7 +46,7 @@ abstract class Storage
 		unset($this->newMigrations[$string]);
 		return $this;
 	}
-	
+
 	/**
 	 * Gets a list of strings that will be added if the save() method is called
 	 * 
@@ -56,7 +56,7 @@ abstract class Storage
 	{
 		return $this->newMigrations;
 	}
-	
+
 	/**
 	 * Resets the list of strings
 	 * 
@@ -67,17 +67,17 @@ abstract class Storage
 		$this->newMigrations = array();
 		return $this;
 	}
-	
+
 	/**
 	 * When called will save the list of strings
 	 */
 	public abstract function save();
-	
+
 	/**
 	 * Returns a list of strings that have already been stored
 	 * 
 	 * @return array
 	 */
 	public abstract function getPast();
-	
+
 }
