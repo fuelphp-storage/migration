@@ -69,7 +69,7 @@ abstract class Migration
 	
 	public function alwaysRun()
 	{
-		return $this->alwaysRun();
+		return $this->alwaysRun;
 	}
 }
 
