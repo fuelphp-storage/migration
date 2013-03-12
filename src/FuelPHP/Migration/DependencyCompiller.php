@@ -32,6 +32,18 @@ class DependencyCompiller
 	public function __construct(Storage\Storage $storage)
 	{
 		$this->storage = $storage;
+		$this->reset();
+	}
+	
+	/**
+	 * Clears the debug and run stacks as well as resetting the list of run
+	 * migrations.
+	 */
+	public function reset()
+	{
+		$this->runStack = array();
+		$this->debugStack = array();
+		
 		//Load the list of already run migrations
 		$this->oldMigrations = $this->storage->getPast();
 	}

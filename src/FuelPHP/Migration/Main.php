@@ -12,6 +12,7 @@
 namespace FuelPHP\Migration;
 
 use FuelPHP\Common\Arr;
+use FuelPHP\Migration\Exception\RecursiveDependency;
 
 /**
  * Main entry point for running migrations
@@ -23,6 +24,8 @@ use FuelPHP\Common\Arr;
 class Main
 {
 
+	protected $dc = null;
+	
 	protected $config = array(
 		'driver' => array(
 			'type' => 'File',
@@ -45,15 +48,21 @@ class Main
 		$this->dc = new DependencyCompiller(new $class($this->config['driver']));
 	}
 
-	public function runMigration($migration)
+	public function runMigration($migrations)
 	{
-		//Check if the class is a subclass of the migration parent class
-		
-		//Check if this migration has run
-		
-		
-		//if not then add it to the list and load the dependencies
-			// $this->runMigration(...)
+		//Add the migration to the DC, if it does not need to be run the list
+		//returned will be empty
+		foreach((array) $migrations as $migration)
+		{
+			try
+			{
+				$this->dc->addMigration($migration);
+			}
+			catch ( RecursiveDependency $exc )
+			{
+				//Break and die here
+			}
+		}
 	}
 
 }
