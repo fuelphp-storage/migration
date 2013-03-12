@@ -25,7 +25,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 		vfsStream::setup('fuelphpMigration');
 		$this->fileLocation = vfsStream::url('fuelphpMigration/FileTest.tmp');
 
-		$this->object = new File($this->fileLocation);
+		$this->object = new File(array('location' => $this->fileLocation));
 	}
 
 	/**
