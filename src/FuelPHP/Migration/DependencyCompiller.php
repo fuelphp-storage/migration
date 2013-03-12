@@ -12,6 +12,8 @@
 namespace FuelPHP\Migration;
 
 use FuelPHP\Migration\Exception\RecursiveDependency;
+use FuelPHP\Migration\Storage\Storage;
+use FuelPHP\Migration\Message\Log;
 
 /**
  * This class is responsable for keeping a list of migrations to run and
@@ -28,9 +30,11 @@ class DependencyCompiller
 	protected $debugStack = array();
 	protected $storage = null;
 	protected $oldMigrations = array();
+	protected $log = null;
 
-	public function __construct(Storage\Storage $storage)
+	public function __construct(Storage $storage, Log $logger)
 	{
+		$this->log = $logger;
 		$this->storage = $storage;
 		$this->reset();
 	}
@@ -69,7 +73,7 @@ class DependencyCompiller
 
 		// Create an intance of the migration to store and poke for more info
 		$class = $migration;
-		$migration = new $migration;
+		$migration = new $migration($this->log);
 
 		//Add the migration to the run stack and the debug stack
 		$this->runStack[$class] = $migration;

@@ -11,6 +11,8 @@
 
 namespace FuelPHP\Migration;
 
+use FuelPHP\Migration\Message\Log;
+
 /**
  * Defines a common interface migration objects
  *
@@ -38,6 +40,11 @@ abstract class Migration
 	 */
 	const UGLY = 2;
 
+	public function __construct(Log $log)
+	{
+		$this->log = $log;
+	}
+	
 	/**
 	 * If this is set to true the migration will not be recorded as run and will
 	 * never be skipped if already run.

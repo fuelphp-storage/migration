@@ -50,7 +50,10 @@ class Main
 		}
 
 		$this->setLogger(new Basic);
-		$this->dc = new DependencyCompiller(new $storageDriver($this->config['driver']));
+		$this->dc = new DependencyCompiller(
+			new $storageDriver($this->config['driver']),
+			$this->log
+		);
 	}
 
 	/**
@@ -99,14 +102,16 @@ class Main
 			}
 		}
 		
-		$this->log->log('Migrations to run in total: ' . count($migrations));
+		$toRun = $this->dc->getList();
+		
+		$this->log->log('Migrations to run in total: ' . count($toRun));
 
 		$this->runStack = array();
 
-		$totalMigrations = count($migrations);
+		$totalMigrations = count($toRun);
 		//Start running the migrations
 
-		foreach ( $migrations as $class => $migration )
+		foreach ( $toRun as $class => $migration )
 		{
 			$result = $migration->up();
 
@@ -130,6 +135,13 @@ class Main
 			$this->runStack[$class] = $migration;
 			$this->log->log((count($this->runStack)) . '/' . $totalMigrations . ': ' . $class . ' ' . $status,
 				$logFlag);
+			
+			//If this is a bad migration then start the rollback process.
+			if($result == Migration::BAD)
+			{
+				$this->log->log($class. ' failed to up. Rolling back changes.');
+				return false;
+			}
 		}
 
 		return true;
