@@ -50,7 +50,7 @@ class Basic extends Log
 			$this->cliColours[$level] .
 			"m" .
 			$message .
-			"\033[0m"
+			"\033[0m\n"
 		);
 	}
 
@@ -60,7 +60,7 @@ class Basic extends Log
 		$this->hexColours[$level] .
 		'">' .
 		$message .
-		'</span>';
+		'</span><br />';
 	}
 
 }
