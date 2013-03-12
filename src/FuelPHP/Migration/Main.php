@@ -28,6 +28,7 @@ class Main
 
 	protected $dc = null;
 	protected $log = null;
+	protected $runStack = null;
 	protected $config = array(
 		'driver' => array(
 			'type' => 'FuelPHP\Migration\Storage\File',
@@ -42,7 +43,7 @@ class Main
 
 		//Set up the dependency compiller
 		$storageDriver = Arr::get($this->config, 'driver.type');
-		
+
 		if ( !is_subclass_of($storageDriver, 'FuelPHP\Migration\Storage\Storage') )
 		{
 			throw new \InvalidArgumentException('Storage driver must extend Storage\Storage');
@@ -92,29 +93,69 @@ class Main
 			}
 			catch ( RecursiveDependency $exc )
 			{
-				//TODO: move this into it's own method
 				//Break and die here
-				$this->log->log('Recursive dependency detected, aborting!', Log::ERROR);
-				$debugStack = $exc->getStack();
-
-				$this->log->log('Stack trace:', Log::ERROR);
-				for ( $step = 0; $step < count($debugStack); $step++ )
-				{
-					$class = $debugStack[$step];
-					$this->log->log($step . ': ' . $class, Log::WARN);
-				}
-
-				return;
+				$this->logRecursiveDepError($exc);
+				return false;
 			}
 		}
 
-		$this->upMigrations($this->dc->getList());
-		return $this;
+		return $this->upMigrations($this->dc->getList());
 	}
-	
+
 	protected function upMigrations(array $migrations)
 	{
 		$this->log->log('Migrations to run in total: ' . count($migrations));
+
+		$this->runStack = array();
+
+		$totalMigrations = count($migrations);
+		//Start running the migrations
+
+		foreach ( $migrations as $class => $migration )
+		{
+			$result = $migration->up();
+
+			switch ( $result )
+			{
+				//TODO: find a nicer way to do this
+				case Migration::GOOD:
+					$status = 'good';
+					$logFlag = Log::NORMAL;
+					break;
+				case Migration::UGLY:
+					$status = 'ugly';
+					$logFlag = Log::WARN;
+					break;
+				case Migration::BAD:
+					$status = 'BAD';
+					$logFlag = Log::ERROR;
+					break;
+			}
+
+			$this->runStack[$class] = $migration;
+			$this->log->log((count($this->runStack)) . '/' . $totalMigrations . ': ' . $class . ' ' . $status,
+				$logFlag);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Logs out a RecursiveDependency exception and debug stacktrace
+	 * 
+	 * @param \FuelPHP\Migration\Exception\RecursiveDependency $exc
+	 */
+	public function logRecursiveDepError(RecursiveDependency $exc)
+	{
+		$this->log->log('Recursive dependency detected, aborting!', Log::ERROR);
+		$debugStack = $exc->getStack();
+
+		$this->log->log('Stack trace:', Log::ERROR);
+		for ( $step = 0; $step < count($debugStack); $step++ )
+		{
+			$class = $debugStack[$step];
+			$this->log->log($step . ': ' . $class, Log::WARN);
+		}
 	}
 
 }
