@@ -70,9 +70,9 @@ class Main
 	 * of all needed migrations.
 	 * 
 	 * @param  string|array $migrations
-	 * @return \FuelPHP\Migration\Main
+	 * @return boolean
 	 */
-	public function runMigrations($migrations)
+	public function up($migrations)
 	{
 		$migrations = (array) $migrations;
 		$this->dc->reset();
@@ -98,12 +98,7 @@ class Main
 				return false;
 			}
 		}
-
-		return $this->upMigrations($this->dc->getList());
-	}
-
-	protected function upMigrations(array $migrations)
-	{
+		
 		$this->log->log('Migrations to run in total: ' . count($migrations));
 
 		$this->runStack = array();
