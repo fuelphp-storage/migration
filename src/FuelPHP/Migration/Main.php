@@ -13,8 +13,10 @@ namespace FuelPHP\Migration;
 
 use FuelPHP\Common\Arr;
 use FuelPHP\Migration\Exception\RecursiveDependency;
-use FuelPHP\Migration\Message\Log;
-use FuelPHP\Migration\Message\Basic;
+use Psr\Log\NullLogger;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LogLevel;
 
 /**
  * Main entry point for running migrations
@@ -23,7 +25,7 @@ use FuelPHP\Migration\Message\Basic;
  * @since   2.0.0
  * @author  Fuel Development Team
  */
-class Main
+class Main implements LoggerAwareInterface
 {
 
 	protected $dc = null;
@@ -49,20 +51,19 @@ class Main
 			throw new \InvalidArgumentException('Storage driver must extend Storage\Storage');
 		}
 
-		$this->setLogger(new Basic);
+		$this->setLogger(new NullLogger);
 		$this->dc = new DependencyCompiller(
-			new $storageDriver($this->config['driver']),
-			$this->log
+			new $storageDriver($this->config['driver']), $this->log
 		);
 	}
 
 	/**
 	 * Sets the implementation to use for logging.
 	 * 
-	 * @param  FuelPHP\Migration\Message\Log $log
+	 * @param  LoggerInterface $log PSR-3 compatable logging class to use
 	 * @return FuelPHP\Migration\Main
 	 */
-	public function setLogger(Log $log)
+	public function setLogger(LoggerInterface $log)
 	{
 		$this->log = $log;
 		return $this;
@@ -79,12 +80,12 @@ class Main
 	{
 		$migrations = (array) $migrations;
 		$this->dc->reset();
-		$this->log->log('Migrations started', Log::WARN);
+		$this->log->info('Migrations started');
 
 		$total = count($migrations);
-		$this->log->log($total . ' migration' . (($total == 1) ? '' : 's') . ' to install');
+		$this->log->info($total . ' migration' . (($total == 1) ? '' : 's') . ' to install');
 
-		$this->log->log('Compiling dependencies', Log::WARN);
+		$this->log->info('Compiling dependencies');
 
 		//Add the migration to the DC, if it does not need to be run the list
 		//returned will be empty
@@ -101,10 +102,10 @@ class Main
 				return false;
 			}
 		}
-		
+
 		$toRun = $this->dc->getList();
-		
-		$this->log->log('Migrations to run in total: ' . count($toRun));
+
+		$this->log->info('Migrations to run in total: ' . count($toRun));
 
 		$this->runStack = array();
 
@@ -120,26 +121,26 @@ class Main
 				//TODO: find a nicer way to do this
 				case Migration::GOOD:
 					$status = 'good';
-					$logFlag = Log::NORMAL;
+					$logFlag = LogLevel::INFO;
 					break;
 				case Migration::UGLY:
 					$status = 'ugly';
-					$logFlag = Log::WARN;
+					$logFlag = LogLevel::WARNING;
 					break;
 				case Migration::BAD:
 					$status = 'BAD';
-					$logFlag = Log::ERROR;
+					$logFlag = LogLevel::ERROR;
 					break;
 			}
 
 			$this->runStack[$class] = $migration;
-			$this->log->log((count($this->runStack)) . '/' . $totalMigrations . ': ' . $class . ' ' . $status,
-				$logFlag);
-			
+			$this->log->log($logFlag,
+				(count($this->runStack)) . '/' . $totalMigrations . ': ' . $class . ' ' . $status);
+
 			//If this is a bad migration then start the rollback process.
-			if($result == Migration::BAD)
+			if ( $result == Migration::BAD )
 			{
-				$this->log->log($class. ' failed to up. Rolling back changes.');
+				$this->log->info($class . ' failed to up. Rolling back changes.');
 				return false;
 			}
 		}
@@ -154,14 +155,14 @@ class Main
 	 */
 	public function logRecursiveDepError(RecursiveDependency $exc)
 	{
-		$this->log->log('Recursive dependency detected, aborting!', Log::ERROR);
+		$this->log->error('Recursive dependency detected, aborting!');
 		$debugStack = $exc->getStack();
 
-		$this->log->log('Stack trace:', Log::ERROR);
+		$this->log->error('Stack trace:');
 		for ( $step = 0; $step < count($debugStack); $step++ )
 		{
 			$class = $debugStack[$step];
-			$this->log->log($step . ': ' . $class, Log::WARN);
+			$this->log->error($step . ': ' . $class);
 		}
 	}
 

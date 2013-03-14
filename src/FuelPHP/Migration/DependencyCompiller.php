@@ -13,7 +13,9 @@ namespace FuelPHP\Migration;
 
 use FuelPHP\Migration\Exception\RecursiveDependency;
 use FuelPHP\Migration\Storage\Storage;
-use FuelPHP\Migration\Message\Log;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 
 /**
  * This class is responsable for keeping a list of migrations to run and
@@ -23,7 +25,7 @@ use FuelPHP\Migration\Message\Log;
  * @since   2.0.0
  * @author  Fuel Development Team
  */
-class DependencyCompiller
+class DependencyCompiller implements LoggerAwareInterface
 {
 
 	protected $runStack = array();
@@ -32,13 +34,28 @@ class DependencyCompiller
 	protected $oldMigrations = array();
 	protected $log = null;
 
-	public function __construct(Storage $storage, Log $logger)
+	public function __construct(Storage $storage, LoggerInterface $logger = null)
 	{
-		$this->log = $logger;
+		if ( is_null($logger) )
+		{
+			$logger = new NullLogger();
+		}
+
+		$this->setLogger($logger);
 		$this->storage = $storage;
 		$this->reset();
 	}
-	
+
+	/**
+	 * Sets the logging interface to use.
+	 * 
+	 * @param \Psr\Log\LoggerInterface $logger
+	 */
+	public function setLogger(LoggerInterface $logger)
+	{
+		$this->log = $logger;
+	}
+
 	/**
 	 * Clears the debug and run stacks as well as resetting the list of run
 	 * migrations.
@@ -47,7 +64,7 @@ class DependencyCompiller
 	{
 		$this->runStack = array();
 		$this->debugStack = array();
-		
+
 		//Load the list of already run migrations
 		$this->oldMigrations = $this->storage->getPast();
 	}
@@ -66,7 +83,7 @@ class DependencyCompiller
 		}
 
 		//Check if the migration has been run before
-		if ( ! $this->shouldAddMigration($migration) )
+		if ( !$this->shouldAddMigration($migration) )
 		{
 			return;
 		}

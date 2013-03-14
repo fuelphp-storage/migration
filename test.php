@@ -25,5 +25,6 @@ function __autoload($className)
 
 require ('tests/src/test_migration_classes.php');
 
-$main = new FuelPHP\Migration\Main();
+$main = new FuelPHP\Migration\Main;
+$main->setLogger(new FuelPHP\Migration\Logger\Basic);
 
