@@ -31,8 +31,9 @@ class Main implements LoggerAwareInterface
 	protected $dc = null;
 	protected $log = null;
 	protected $runStack = null;
+	protected $storage = null;
 	protected $config = array(
-		'driver' => array(
+		'storage' => array(
 			'type' => 'FuelPHP\Migration\Storage\File',
 		),
 	);
@@ -40,21 +41,25 @@ class Main implements LoggerAwareInterface
 	public function __construct($config = array())
 	{
 		//Set a default file location
-		$this->config['driver']['location'] = __DIR__ . DIRECTORY_SEPARATOR . '../../../resources/migrations.list';
+		$this->config['storage']['location'] = __DIR__ . DIRECTORY_SEPARATOR . '../../../resources/migrations.list';
 		$this->config = Arr::merge($this->config, $config);
 
 		//Set up the dependency compiller
-		$storageDriver = Arr::get($this->config, 'driver.type');
-
-		if ( !is_subclass_of($storageDriver, 'FuelPHP\Migration\Storage\Storage') )
+		$stroage = Arr::get($this->config, 'storage.instance', false);
+		if ( $stroage === false )
 		{
-			throw new \InvalidArgumentException('Storage driver must extend Storage\Storage');
+			$storageDriver = Arr::get($this->config, 'storage.type');
+
+			if ( !is_subclass_of($storageDriver, 'FuelPHP\Migration\Storage\Storage') )
+			{
+				throw new \InvalidArgumentException('Storage driver must extend Storage\Storage');
+			}
+			$storage = new $storageDriver($this->config['storage']);
 		}
+		$this->storage = $storage;
 
 		$this->setLogger(new NullLogger);
-		$this->dc = new DependencyCompiller(
-			new $storageDriver($this->config['driver']), $this->log
-		);
+		$this->dc = new DependencyCompiller($storage, $this->log);
 	}
 
 	/**
@@ -67,6 +72,15 @@ class Main implements LoggerAwareInterface
 	{
 		$this->log = $log;
 		return $this;
+	}
+	
+	/**
+	 * Gets the storage instance that is being used.
+	 * @return FuelPHP\Migration\Storage\Storage
+	 */
+	public function getStorage()
+	{
+		return $this->storage;
 	}
 
 	/**
@@ -134,6 +148,7 @@ class Main implements LoggerAwareInterface
 			}
 
 			$this->runStack[$class] = $migration;
+			$this->storage->add($class);
 			$this->log->log($logFlag,
 				(count($this->runStack)) . '/' . $totalMigrations . ': ' . $class . ' ' . $status);
 

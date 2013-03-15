@@ -93,6 +93,11 @@ abstract class Migration implements LoggerAwareInterface
 		return array();
 	}
 
+	/**
+	 * Returns true if the migration is an always run migration
+	 * 
+	 * @return boolean
+	 */
 	public function alwaysRun()
 	{
 		return $this->alwaysRun;

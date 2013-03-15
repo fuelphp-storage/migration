@@ -30,8 +30,14 @@ class File extends Storage
 
 	public function getPast()
 	{
+		if ( ! file_exists($this->fileLocation) )
+		{
+			file_put_contents($this->fileLocation, '');
+			return array();
+		}
+
 		$content = file_get_contents($this->fileLocation);
-		
+
 		return explode("\n", $content);
 	}
 
