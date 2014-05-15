@@ -1,18 +1,16 @@
 <?php
-
 /**
  * Part of the FuelPHP framework.
  *
- * @package   FuelPHP\Migration
+ * @package   Fuel\Migration
  * @version   2.0
  * @license   MIT License
- * @copyright 2010 - 2013 Fuel Development Team
+ * @copyright 2010 - 2014 Fuel Development Team
  */
 
-namespace FuelPHP\Migration;
+namespace Fuel\Migration;
 
-use FuelPHP\Common\Arr;
-use FuelPHP\Migration\Exception\RecursiveDependency;
+use Fuel\Common\Arr;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -21,8 +19,8 @@ use Psr\Log\LogLevel;
 /**
  * Main entry point for running migrations
  *
- * @package FuelPHP\Migration
- * @since   2.0.0
+ * @package Fuel\Migration
+ * @since   2.0
  * @author  Fuel Development Team
  */
 class Main implements LoggerAwareInterface
@@ -34,7 +32,7 @@ class Main implements LoggerAwareInterface
 	protected $storage = null;
 	protected $config = array(
 		'storage' => array(
-			'type' => 'FuelPHP\Migration\Storage\File',
+			'type' => 'Fuel\Migration\Storage\File',
 		),
 	);
 
@@ -44,13 +42,13 @@ class Main implements LoggerAwareInterface
 		$this->config['storage']['location'] = __DIR__ . DIRECTORY_SEPARATOR . '../../../resources/migrations.list';
 		$this->config = Arr::merge($this->config, $config);
 
-		//Set up the dependency compiller
-		$stroage = Arr::get($this->config, 'storage.instance', false);
-		if ( $stroage === false )
+		//Set up the dependency compiler
+		$storage = Arr::get($this->config, 'storage.instance', false);
+		if ( $storage === false )
 		{
 			$storageDriver = Arr::get($this->config, 'storage.type');
 
-			if ( !is_subclass_of($storageDriver, 'FuelPHP\Migration\Storage\Storage') )
+			if ( !is_subclass_of($storageDriver, 'Fuel\Migration\Storage\Storage') )
 			{
 				throw new \InvalidArgumentException('Storage driver must extend Storage\Storage');
 			}
@@ -64,19 +62,19 @@ class Main implements LoggerAwareInterface
 
 	/**
 	 * Sets the implementation to use for logging.
-	 * 
-	 * @param  LoggerInterface $log PSR-3 compatable logging class to use
-	 * @return FuelPHP\Migration\Main
+	 *
+	 * @param  LoggerInterface $log PSR-3 compatible logging class to use
+	 * @return $this
 	 */
 	public function setLogger(LoggerInterface $log)
 	{
 		$this->log = $log;
 		return $this;
 	}
-	
+
 	/**
 	 * Gets the storage instance that is being used.
-	 * @return FuelPHP\Migration\Storage\Storage
+	 * @return Storage\Storage
 	 */
 	public function getStorage()
 	{
@@ -86,7 +84,7 @@ class Main implements LoggerAwareInterface
 	/**
 	 * Given a list of migrations will compile dependencies and run the up method
 	 * of all needed migrations.
-	 * 
+	 *
 	 * @param  string|array $migrations
 	 * @return boolean
 	 */
@@ -165,7 +163,7 @@ class Main implements LoggerAwareInterface
 
 	/**
 	 * Logs out a RecursiveDependency exception and debug stacktrace
-	 * 
+	 *
 	 * @param \FuelPHP\Migration\Exception\RecursiveDependency $exc
 	 */
 	public function logRecursiveDepError(RecursiveDependency $exc)

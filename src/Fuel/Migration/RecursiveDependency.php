@@ -6,13 +6,13 @@
  * @package   FuelPHP\Migration
  * @version   2.0
  * @license   MIT License
- * @copyright 2010 - 2013 Fuel Development Team
+ * @copyright 2010 - 2014 Fuel Development Team
  */
 
-namespace FuelPHP\Migration\Exception;
+namespace Fuel\Migration;
 
 /**
- * 
+ *
  *
  * @package FuelPHP\Migration
  * @since   2.0.0

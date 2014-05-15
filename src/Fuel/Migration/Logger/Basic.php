@@ -1,15 +1,14 @@
 <?php
-
 /**
  * Part of the FuelPHP framework.
  *
- * @package   FuelPHP\Migration
+ * @package   Fuel\Migration
  * @version   2.0
  * @license   MIT License
- * @copyright 2010 - 2013 Fuel Development Team
+ * @copyright 2010 - 2014 Fuel Development Team
  */
 
-namespace FuelPHP\Migration\Logger;
+namespace Fuel\Migration\Logger;
 
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
@@ -18,8 +17,8 @@ use Psr\Log\LogLevel;
  * Basic implementation for displaying log messages. Intended really only for
  * testing.
  *
- * @package FuelPHP\Migration\Message
- * @since   2.0.0
+ * @package Fuel\Migration\Message
+ * @since   2.0
  * @author  Fuel Development Team
  */
 class Basic extends AbstractLogger
@@ -55,7 +54,7 @@ class Basic extends AbstractLogger
 
 	/**
 	 * Logs a message to the command line
-	 * 
+	 *
 	 * @param string $message
 	 * @param string $level
 	 */
@@ -71,7 +70,7 @@ class Basic extends AbstractLogger
 
 	/**
 	 * Logs a message to the browser
-	 * 
+	 *
 	 * @param string $message
 	 * @param string $level
 	 */
@@ -86,7 +85,7 @@ class Basic extends AbstractLogger
 
 	/**
 	 * Main logging method.
-	 * 
+	 *
 	 * @param string $level   Level from Psr\Log\LogLevel
 	 * @param string $message The message to log
 	 * @param array  $context Message context

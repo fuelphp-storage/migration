@@ -1,15 +1,14 @@
 <?php
-
 /**
  * Part of the FuelPHP framework.
  *
  * @package   FuelPHP\Migration
  * @version   2.0
  * @license   MIT License
- * @copyright 2010 - 2013 Fuel Development Team
+ * @copyright 2010 - 2014 Fuel Development Team
  */
 
-namespace FuelPHP\Migration;
+namespace Fuel\Migration;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -18,16 +17,16 @@ use Psr\Log\NullLogger;
 /**
  * Defines a common interface migration objects
  *
- * @package FuelPHP\Migration
- * @since   2.0.0
+ * @package Fuel\Migration
+ * @since   2.0
  * @author  Fuel Development Team
  */
 abstract class Migration implements LoggerAwareInterface
 {
+
 	/**
 	 * Indicates that a migration was run without problem.
 	 */
-
 	const GOOD = 0;
 
 	/**
@@ -56,7 +55,7 @@ abstract class Migration implements LoggerAwareInterface
 
 	/**
 	 * Sets the logging interface to use.
-	 * 
+	 *
 	 * @param \Psr\Log\LoggerInterface $logger
 	 */
 	public function setLogger(LoggerInterface $logger)
@@ -85,7 +84,7 @@ abstract class Migration implements LoggerAwareInterface
 	/**
 	 * Should return a list of fully namespaced classes for migrations that this
 	 * migration depends on.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function dependencies()
@@ -95,7 +94,7 @@ abstract class Migration implements LoggerAwareInterface
 
 	/**
 	 * Returns true if the migration is an always run migration
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public function alwaysRun()

@@ -1,21 +1,20 @@
 <?php
-
 /**
  * Part of the FuelPHP framework.
  *
- * @package   FuelPHP\Migration\Storage
+ * @package   Fuel\Migration\Storage
  * @version   2.0
  * @license   MIT License
- * @copyright 2010 - 2013 Fuel Development Team
+ * @copyright 2010 - 2014 Fuel Development Team
  */
 
-namespace FuelPHP\Migration\Storage;
+namespace Fuel\Migration\Storage;
 
 /**
  * Defines a common interface for storing run migrations.
  *
- * @package FuelPHP\Migration\Storage
- * @since   2.0.0
+ * @package Fuel\Migration\Storage
+ * @since   2.0
  * @author  Fuel Development Team
  */
 abstract class Storage
@@ -25,9 +24,9 @@ abstract class Storage
 
 	/**
 	 * Adds a string to be saved.
-	 * 
+	 *
 	 * @param  string $string
-	 * @return \FuelPHP\Migration\Storage\Storage
+	 * @return $this
 	 */
 	public function add($string)
 	{
@@ -37,9 +36,9 @@ abstract class Storage
 
 	/**
 	 * Removes a string
-	 * 
+	 *
 	 * @param  string $string
-	 * @return \FuelPHP\Migration\Storage\Storage
+	 * @return $this
 	 */
 	public function remove($string)
 	{
@@ -49,7 +48,7 @@ abstract class Storage
 
 	/**
 	 * Gets a list of strings that will be added if the save() method is called
-	 * 
+	 *
 	 * @return array
 	 */
 	public function get()
@@ -59,8 +58,8 @@ abstract class Storage
 
 	/**
 	 * Resets the list of strings
-	 * 
-	 * @return \FuelPHP\Migration\Storage\Storage
+	 *
+	 * @return $this
 	 */
 	public function reset()
 	{
@@ -75,7 +74,7 @@ abstract class Storage
 
 	/**
 	 * Returns a list of strings that have already been stored
-	 * 
+	 *
 	 * @return array
 	 */
 	public abstract function getPast();

@@ -1,28 +1,27 @@
 <?php
-
 /**
  * Part of the FuelPHP framework.
  *
  * @package   FuelPHP\Migration
  * @version   2.0
  * @license   MIT License
- * @copyright 2010 - 2013 Fuel Development Team
+ * @copyright 2010 - 2014 Fuel Development Team
  */
 
-namespace FuelPHP\Migration;
+namespace Fuel\Migration;
 
-use FuelPHP\Migration\Exception\RecursiveDependency;
-use FuelPHP\Migration\Storage\Storage;
+use Fuel\Migration\RecursiveDependency;
+use Fuel\Migration\Storage\Storage;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
 
 /**
- * This class is responsable for keeping a list of migrations to run and
+ * This class is responsible for keeping a list of migrations to run and
  * working out their dependencies.
  *
- * @package FuelPHP\Migration
- * @since   2.0.0
+ * @package Fuel\Migration
+ * @since   2.0
  * @author  Fuel Development Team
  */
 class DependencyCompiller implements LoggerAwareInterface
@@ -48,7 +47,7 @@ class DependencyCompiller implements LoggerAwareInterface
 
 	/**
 	 * Sets the logging interface to use.
-	 * 
+	 *
 	 * @param \Psr\Log\LoggerInterface $logger
 	 */
 	public function setLogger(LoggerInterface $logger)
@@ -71,13 +70,13 @@ class DependencyCompiller implements LoggerAwareInterface
 
 	/**
 	 * Adds a migration to run and any dependencies it might have.
-	 * 
+	 *
 	 * @param  string $migration Full class name of the migration to add
 	 * @throws \InvalidArgumentException
 	 */
 	public function addMigration($migration)
 	{
-		if ( !is_subclass_of($migration, 'FuelPHP\Migration\Migration') )
+		if ( !is_subclass_of($migration, 'Fuel\Migration\Migration') )
 		{
 			throw new \InvalidArgumentException($migration . ' should be a subclass of FuelPHP\Migration\Migration');
 		}
@@ -88,8 +87,9 @@ class DependencyCompiller implements LoggerAwareInterface
 			return;
 		}
 
-		// Create an intance of the migration to store and poke for more info
+		// Create an instance of the migration to store and poke for more info
 		$class = $migration;
+		/** @var Migration $migration */
 		$migration = new $migration($this->log);
 
 		//Add the migration to the run stack and the debug stack
@@ -118,7 +118,7 @@ class DependencyCompiller implements LoggerAwareInterface
 
 	/**
 	 * Returns a list of migrations to run in the order they should be run in.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function getList()
@@ -134,7 +134,7 @@ class DependencyCompiller implements LoggerAwareInterface
 	/**
 	 * Returns true if the given migration is not already in the toRun list and
 	 * if it has not already been run in the past.
-	 * 
+	 *
 	 * @param  string $migration
 	 * @return boolean
 	 */

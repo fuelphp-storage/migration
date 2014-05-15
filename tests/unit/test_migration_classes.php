@@ -1,13 +1,13 @@
 <?php
 
-namespace FuelPHP\Migration;
+namespace Fuel\Migration;
 
 /**
  * Standard migration with no dependencies
  */
 class MigrationNoDeps extends Migration
 {
-	
+
 	public function down()
 	{
 		return Migration::GOOD;
@@ -17,7 +17,7 @@ class MigrationNoDeps extends Migration
 	{
 		return Migration::GOOD;
 	}
-	
+
 }
 
 /**
@@ -25,7 +25,7 @@ class MigrationNoDeps extends Migration
  */
 class MigrationWithDeps extends Migration
 {
-	
+
 	public function down()
 	{
 		return Migration::GOOD;
@@ -35,14 +35,14 @@ class MigrationWithDeps extends Migration
 	{
 		return Migration::GOOD;
 	}
-	
+
 	public function dependencies()
 	{
 		return array(
-			'FuelPHP\Migration\MigrationNoDeps'
+			'Fuel\Migration\MigrationNoDeps'
 		);
 	}
-	
+
 }
 
 class MigrationRecursiveA extends Migration
@@ -56,11 +56,11 @@ class MigrationRecursiveA extends Migration
 	{
 		return Migration::GOOD;
 	}
-	
+
 	public function dependencies()
 	{
 		return array(
-			'FuelPHP\Migration\MigrationRecursiveB'
+			'Fuel\Migration\MigrationRecursiveB'
 		);
 	}
 }
@@ -76,11 +76,11 @@ class MigrationRecursiveB extends Migration
 	{
 		return Migration::GOOD;
 	}
-	
+
 	public function dependencies()
 	{
 		return array(
-			'FuelPHP\Migration\MigrationRecursiveC'
+			'Fuel\Migration\MigrationRecursiveC'
 		);
 	}
 }
@@ -96,11 +96,11 @@ class MigrationRecursiveC extends Migration
 	{
 		return Migration::GOOD;
 	}
-	
+
 	public function dependencies()
 	{
 		return array(
-			'FuelPHP\Migration\MigrationRecursiveA'
+			'Fuel\Migration\MigrationRecursiveA'
 		);
 	}
 }

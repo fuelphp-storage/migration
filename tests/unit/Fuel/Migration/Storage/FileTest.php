@@ -1,6 +1,6 @@
 <?php
 
-namespace FuelPHP\Migration\Storage;
+namespace Fuel\Migration\Storage;
 
 use org\bovigo\vfs\vfsStream;
 

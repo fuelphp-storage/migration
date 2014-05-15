@@ -1,21 +1,20 @@
 <?php
-
 /**
  * Part of the FuelPHP framework.
  *
- * @package   FuelPHP\Migration\Storage
+ * @package   Fuel\Migration\Storage
  * @version   2.0
  * @license   MIT License
- * @copyright 2010 - 2013 Fuel Development Team
+ * @copyright 2010 - 2014 Fuel Development Team
  */
 
-namespace FuelPHP\Migration\Storage;
+namespace Fuel\Migration\Storage;
 
 /**
  * Defines a common interface for storing run migrations.
  *
- * @package FuelPHP\Migration\Storage
- * @since   2.0.0
+ * @package Fuel\Migration\Storage
+ * @since   2.0
  * @author  Fuel Development Team
  */
 class File extends Storage
@@ -49,7 +48,7 @@ class File extends Storage
 
 		if ( $result === false )
 		{
-			throw new Exception('Unable to save the list to ' . $this->fileLocation . '. This could be due to a permissions error.');
+			throw new \Exception('Unable to save the list to ' . $this->fileLocation . '. This could be due to a permissions error.');
 		}
 
 		return $this;

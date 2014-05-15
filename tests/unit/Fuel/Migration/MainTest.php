@@ -1,14 +1,14 @@
 <?php
 
-namespace FuelPHP\Migration;
+namespace Fuel\Migration;
 
 use org\bovigo\vfs\vfsStream;
 
-require_once __DIR__.'/../../test_migration_classes.php';
+require_once __DIR__ . '/../../test_migration_classes.php';
 
 class MainTest extends \PHPUnit_Framework_TestCase
 {
-	
+
 	/**
 	 * @var Main
 	 */
@@ -22,25 +22,25 @@ class MainTest extends \PHPUnit_Framework_TestCase
 	{
 		vfsStream::setup('fuelphpMigration');
 		$storageFile = vfsStream::url('fuelphpMigration/MainTest.tmp');
-		
+
 		$this->object = new Main(array(
 			'storage' => array(
-				'type' => 'FuelPHP\Migration\Storage\File',
+				'type' => 'Fuel\Migration\Storage\File',
 				'location' => $storageFile,
 			),
 		));
 	}
-	
+
 	public function testUp()
 	{
-		$migration = 'FuelPHP\Migration\MigrationNoDeps';
-		
+		$migration = 'Fuel\Migration\MigrationNoDeps';
+
 		$this->object->up($migration);
-		
+
 		$this->assertEquals(
 			array($migration => $migration),
 			$this->object->getStorage()->get()
 		);
 	}
-	
+
 }

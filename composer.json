@@ -7,21 +7,23 @@
 		"license": "MIT",
 		"authors": [
 		{
-				"name": "FuelPHP Development Team",
-				"email": "team@fuelphp.com"
+			"name": "FuelPHP Development Team",
+			"email": "team@fuelphp.com"
 		}
 		],
 		"require": {
-				"php": ">=5.3.3",
-				"fuelphp/common": "dev-develop",
-				"psr/log": "1.0.0"
+			"php": ">=5.3.3",
+			"fuelphp/common": "dev-master",
+			"psr/log": "1.0.0"
 		},
 		"require-dev": {
-				"mockery/mockery": "0.7.*",
-				"mikey179/vfsStream": "1.1.*"
+            "codeception/codeception": "1.8.*",
+            "codeception/mockery-module": "dev-master",
+			"mockery/mockery": "0.7.*",
+			"mikey179/vfsStream": "1.1.*"
 		},
 		"autoload": {
-				"psr-0": { "FuelPHP\\Migration": "src/" }
+			"psr-0": { "Fuel\\Migration": "src/" }
 		},
 		"minimum-stability": "dev"
 }
