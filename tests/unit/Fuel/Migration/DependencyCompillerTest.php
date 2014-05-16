@@ -63,7 +63,7 @@ class DependencyCompillerTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers FuelPHP\Migration\DependencyCompiller::addMigration
+	 * @covers Fuel\Migration\DependencyCompiller::addMigration
 	 * @group  Migration
 	 */
 	public function testAddMigrationRecursiveStack()
