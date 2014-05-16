@@ -26,10 +26,29 @@ use Psr\Log\LogLevel;
 class Main implements LoggerAwareInterface
 {
 
+	/**
+	 * @var DependencyCompiller|null
+	 */
 	protected $dc = null;
+
+	/**
+	 * @var LoggerInterface
+	 */
 	protected $log = null;
+
+	/**
+	 * @var array
+	 */
 	protected $runStack = null;
+
+	/**
+	 * @var Storage\Storage
+	 */
 	protected $storage = null;
+
+	/**
+	 * @var array
+	 */
 	protected $config = array(
 		'storage' => array(
 			'type' => 'Fuel\Migration\Storage\File',
@@ -44,6 +63,7 @@ class Main implements LoggerAwareInterface
 
 		//Set up the dependency compiler
 		$storage = Arr::get($this->config, 'storage.instance', false);
+		$storageInstance = null;
 		if ( $storage === false )
 		{
 			$storageDriver = Arr::get($this->config, 'storage.type');
@@ -52,12 +72,12 @@ class Main implements LoggerAwareInterface
 			{
 				throw new \InvalidArgumentException('Storage driver must extend Storage\Storage');
 			}
-			$storage = new $storageDriver($this->config['storage']);
+			$storageInstance = new $storageDriver($this->config['storage']);
 		}
-		$this->storage = $storage;
+		$this->storage = $storageInstance;
 
 		$this->setLogger(new NullLogger);
-		$this->dc = new DependencyCompiller($storage, $this->log);
+		$this->dc = new DependencyCompiller($this->storage, $this->log);
 	}
 
 	/**
@@ -143,6 +163,10 @@ class Main implements LoggerAwareInterface
 					$status = 'BAD';
 					$logFlag = LogLevel::ERROR;
 					break;
+				default:
+					$status = 'Unknown migration status';
+					$logFlag = LogLevel::ERROR;
+					break;
 			}
 
 			$this->runStack[$class] = $migration;
@@ -164,7 +188,7 @@ class Main implements LoggerAwareInterface
 	/**
 	 * Logs out a RecursiveDependency exception and debug stacktrace
 	 *
-	 * @param \FuelPHP\Migration\Exception\RecursiveDependency $exc
+	 * @param \Fuel\Migration\RecursiveDependency $exc
 	 */
 	public function logRecursiveDepError(RecursiveDependency $exc)
 	{

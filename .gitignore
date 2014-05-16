@@ -16,4 +16,6 @@ nbproject/
 *.sublime-project
 *.sublime-workspace
 index.php
+tests/_log/*
+composer.phar
 
