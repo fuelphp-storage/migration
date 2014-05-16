@@ -15,18 +15,18 @@ use Codeception\TestCase\Test;
 require_once __DIR__ . '/../../test_migration_classes.php';
 
 /**
- * Tests for DependencyCompiller
+ * Tests for DependencyCompiler
  *
  * @package Fuel\Migration
  * @author  Fuel Development Team
  *
- * @coversDefaultClass \Fuel\Migration\DependencyCompiller
+ * @coversDefaultClass \Fuel\Migration\DependencyCompiler
  */
-class DependencyCompillerTest extends Test
+class DependencyCompilerTest extends Test
 {
 
 	/**
-	 * @var DependencyCompiller
+	 * @var DependencyCompiler
 	 */
 	protected $object;
 
@@ -36,7 +36,7 @@ class DependencyCompillerTest extends Test
 		$storage->shouldReceive('save')->andReturn(true);
 		$storage->shouldReceive('getPast')->andReturn(array());
 
-		$this->object = new DependencyCompiller($storage);
+		$this->object = new DependencyCompiler($storage);
 	}
 
 	/**

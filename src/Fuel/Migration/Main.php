@@ -27,7 +27,7 @@ class Main implements LoggerAwareInterface
 {
 
 	/**
-	 * @var DependencyCompiller|null
+	 * @var DependencyCompiler|null
 	 */
 	protected $dc = null;
 
@@ -77,7 +77,7 @@ class Main implements LoggerAwareInterface
 		$this->storage = $storageInstance;
 
 		$this->setLogger(new NullLogger);
-		$this->dc = new DependencyCompiller($this->storage, $this->log);
+		$this->dc = new DependencyCompiler($this->storage, $this->log);
 	}
 
 	/**

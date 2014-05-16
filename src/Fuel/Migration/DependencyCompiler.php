@@ -24,7 +24,7 @@ use Psr\Log\NullLogger;
  * @since   2.0
  * @author  Fuel Development Team
  */
-class DependencyCompiller implements LoggerAwareInterface
+class DependencyCompiler implements LoggerAwareInterface
 {
 
 	protected $runStack = array();
