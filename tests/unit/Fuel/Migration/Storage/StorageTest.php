@@ -1,8 +1,26 @@
 <?php
+/**
+ * Part of the FuelPHP framework.
+ *
+ * @package   FuelPHP\Migration
+ * @version   2.0
+ * @license   MIT License
+ * @copyright 2010 - 2014 Fuel Development Team
+ */
 
 namespace Fuel\Migration\Storage;
 
-class StorageTest extends \PHPUnit_Framework_TestCase
+use Codeception\TestCase\Test;
+
+/**
+ * Tests for Storage
+ *
+ * @package Fuel\Migration\Storage
+ * @author  Fuel Development Team
+ *
+ * @coversDefaultClass \Fuel\Migration\Storage\Storage
+ */
+class StorageTest extends Test
 {
 
 	/**
@@ -10,7 +28,7 @@ class StorageTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected $object;
 
-	protected function setUp()
+	protected function _before()
 	{
 		$this->object = \Mockery::mock('Fuel\Migration\Storage\Storage[save, getPast]');
 		$this->object->shouldReceive('save')->andReturn(true);
@@ -18,8 +36,8 @@ class StorageTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Fuel\Migration\Storage\Storage::get
-	 * @covers Fuel\Migration\Storage\Storage::add
+	 * @covers ::get
+	 * @covers ::add
 	 * @group  Migration
 	 */
 	public function testAdd()
@@ -35,9 +53,9 @@ class StorageTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Fuel\Migration\Storage\Storage::add
-	 * @covers Fuel\Migration\Storage\Storage::get
-	 * @covers Fuel\Migration\Storage\Storage::remove
+	 * @covers ::add
+	 * @covers ::get
+	 * @covers ::remove
 	 * @group  Migration
 	 */
 	public function testRemove()
@@ -56,9 +74,9 @@ class StorageTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Fuel\Migration\Storage\Storage::get
-	 * @covers Fuel\Migration\Storage\Storage::add
-	 * @covers Fuel\Migration\Storage\Storage::reset
+	 * @covers ::get
+	 * @covers ::add
+	 * @covers ::reset
 	 * @group  Migration
 	 */
 	public function testReset()

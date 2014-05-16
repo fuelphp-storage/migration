@@ -1,10 +1,28 @@
 <?php
+/**
+ * Part of the FuelPHP framework.
+ *
+ * @package   FuelPHP\Migration
+ * @version   2.0
+ * @license   MIT License
+ * @copyright 2010 - 2014 Fuel Development Team
+ */
 
 namespace Fuel\Migration;
 
+use Codeception\TestCase\Test;
+
 require_once __DIR__ . '/../../test_migration_classes.php';
 
-class DependencyCompillerTest extends \PHPUnit_Framework_TestCase
+/**
+ * Tests for DependencyCompiller
+ *
+ * @package Fuel\Migration
+ * @author  Fuel Development Team
+ *
+ * @coversDefaultClass \Fuel\Migration\DependencyCompiller
+ */
+class DependencyCompillerTest extends Test
 {
 
 	/**
@@ -12,7 +30,7 @@ class DependencyCompillerTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected $object;
 
-	protected function setUp()
+	protected function _before()
 	{
 		$storage = \Mockery::mock('Fuel\Migration\Storage\Storage[save, getPast]');
 		$storage->shouldReceive('save')->andReturn(true);
@@ -22,8 +40,8 @@ class DependencyCompillerTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Fuel\Migration\DependencyCompiller::addMigration
-	 * @covers Fuel\Migration\DependencyCompiller::getList
+	 * @covers ::addMigration
+	 * @covers ::getList
 	 * @group  Migration
 	 */
 	public function testAddMigration()
@@ -36,8 +54,8 @@ class DependencyCompillerTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Fuel\Migration\DependencyCompiller::addMigration
-	 * @covers Fuel\Migration\DependencyCompiller::getList
+	 * @covers ::addMigration
+	 * @covers ::getList
 	 * @group  Migration
 	 */
 	public function testAddMigrationWithDeps()
@@ -53,9 +71,9 @@ class DependencyCompillerTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Fuel\Migration\DependencyCompiller::addMigration
+	 * @covers            ::addMigration
 	 * @expectedException \Fuel\Migration\RecursiveDependency
-	 * @group  Migration
+	 * @group             Migration
 	 */
 	public function testAddMigrationRecursive()
 	{
@@ -63,7 +81,7 @@ class DependencyCompillerTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Fuel\Migration\DependencyCompiller::addMigration
+	 * @covers ::addMigration
 	 * @group  Migration
 	 */
 	public function testAddMigrationRecursiveStack()

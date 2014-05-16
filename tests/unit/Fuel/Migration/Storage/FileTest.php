@@ -1,23 +1,40 @@
 <?php
+/**
+ * Part of the FuelPHP framework.
+ *
+ * @package   FuelPHP\Migration
+ * @version   2.0
+ * @license   MIT License
+ * @copyright 2010 - 2014 Fuel Development Team
+ */
 
 namespace Fuel\Migration\Storage;
 
+use Codeception\TestCase\Test;
 use org\bovigo\vfs\vfsStream;
 
-class FileTest extends \PHPUnit_Framework_TestCase
+/**
+ * Tests for File
+ *
+ * @package Fuel\Migration\Storage
+ * @author  Fuel Development Team
+ *
+ * @coversDefaultClass \Fuel\Migration\Storage\File
+ */
+class FileTest extends Test
 {
 
 	/**
 	 * @var File
 	 */
 	protected $object;
-	protected $fileLocation = '';
 
 	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
+	 * @var string
 	 */
-	protected function setUp()
+	protected $fileLocation = '';
+
+	protected function _before()
 	{
 		vfsStream::setup('fuelphpMigration');
 		$this->fileLocation = vfsStream::url('fuelphpMigration/FileTest.tmp');
@@ -26,7 +43,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Fuel\Migration\Storage\File::getPast
+	 * @covers ::getPast
 	 * @group  Migration
 	 */
 	public function testGetPast()
@@ -42,7 +59,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Fuel\Migration\Storage\File::save
+	 * @covers ::save
 	 * @group  Migration
 	 */
 	public function testSave()

@@ -1,12 +1,29 @@
 <?php
+/**
+ * Part of the FuelPHP framework.
+ *
+ * @package   FuelPHP\Migration
+ * @version   2.0
+ * @license   MIT License
+ * @copyright 2010 - 2014 Fuel Development Team
+ */
 
 namespace Fuel\Migration;
 
+use Codeception\TestCase\Test;
 use org\bovigo\vfs\vfsStream;
 
 require_once __DIR__ . '/../../test_migration_classes.php';
 
-class MainTest extends \PHPUnit_Framework_TestCase
+/**
+ * Tests for Main
+ *
+ * @package Fuel\Migration
+ * @author  Fuel Development Team
+ *
+ * @coversDefaultClass \Fuel\Migration\Main
+ */
+class MainTest extends Test
 {
 
 	/**
@@ -14,11 +31,7 @@ class MainTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected $object;
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 */
-	protected function setUp()
+	protected function _before()
 	{
 		vfsStream::setup('fuelphpMigration');
 		$storageFile = vfsStream::url('fuelphpMigration/MainTest.tmp');
@@ -31,6 +44,10 @@ class MainTest extends \PHPUnit_Framework_TestCase
 		));
 	}
 
+	/**
+	 * @covers ::up
+	 * @group  Migration
+	 */
 	public function testUp()
 	{
 		$migration = 'Fuel\Migration\MigrationNoDeps';
