@@ -39,7 +39,7 @@ class FileTest extends Test
 		vfsStream::setup('fuelphpMigration');
 		$this->fileLocation = vfsStream::url('fuelphpMigration/FileTest.tmp');
 
-		$this->object = new File(array('location' => $this->fileLocation));
+		$this->object = new File(['location' => $this->fileLocation]);
 	}
 
 	/**

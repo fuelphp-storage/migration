@@ -41,16 +41,37 @@ class MainTest extends Test
 
 	/**
 	 * @covers ::up
+	 * @covers ::runMigration
 	 * @group  Migration
 	 */
 	public function testUp()
 	{
 		$migration = 'Fuel\Migration\MigrationNoDeps';
 
-		$this->object->up($migration);
+		$this->assertTrue(
+			$this->object->up($migration)
+		);
 
 		$this->assertEquals(
 			array($migration => $migration),
+			$this->object->getStorage()->get()
+		);
+	}
+
+	/**
+	 * @covers ::up
+	 * @group  Migration
+	 */
+	public function testUpThatFails()
+	{
+		$migration = 'Fuel\Migration\MigrationBad';
+
+		$this->assertFalse(
+			$this->object->up($migration)
+		);
+
+		$this->assertEquals(
+			[],
 			$this->object->getStorage()->get()
 		);
 	}

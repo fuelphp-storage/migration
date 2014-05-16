@@ -11,7 +11,6 @@
 namespace Fuel\Migration;
 
 use Codeception\TestCase\Test;
-use Psr\Log\NullLogger;
 
 /**
  * Tests for DependencyCompiler
@@ -32,33 +31,13 @@ class DependencyCompilerTest extends Test
 	protected function _before()
 	{
 		$storage = \Mockery::mock('Fuel\Migration\Storage\Storage[save, getPast]');
-		$storage->shouldReceive('save')->andReturn(true);
-		$storage->shouldReceive('getPast')->andReturn(array());
+		$storage->shouldReceive('save')
+			->andReturn(true);
+
+		$storage->shouldReceive('getPast')
+			->andReturn(array());
 
 		$this->object = new DependencyCompiler($storage);
-	}
-
-	/**
-	 * @covers ::__construct
-	 * @covers ::setLogger
-	 * @covers ::getLogger
-	 * @group  Migration
-	 */
-	public function testGetAndSettingLogger()
-	{
-		$this->assertInstanceOf(
-			'\Psr\Log\NullLogger',
-			$this->object->getLogger()
-		);
-
-		$newLogger = new NullLogger;
-
-		$this->object->setLogger($newLogger);
-
-		$this->assertEquals(
-			$newLogger,
-			$this->object->getLogger()
-		);
 	}
 
 	/**

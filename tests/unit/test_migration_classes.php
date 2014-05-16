@@ -104,3 +104,21 @@ class MigrationRecursiveC extends Migration
 		);
 	}
 }
+
+/**
+ * Standard migration that always fails
+ */
+class MigrationBad extends Migration
+{
+
+	public function down()
+	{
+		return Migration::BAD;
+	}
+
+	public function up()
+	{
+		return Migration::BAD;
+	}
+
+}

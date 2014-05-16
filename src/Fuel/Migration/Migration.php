@@ -10,10 +10,6 @@
 
 namespace Fuel\Migration;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\NullLogger;
-
 /**
  * Defines a common interface migration objects
  *
@@ -21,7 +17,7 @@ use Psr\Log\NullLogger;
  * @since   2.0
  * @author  Fuel Development Team
  */
-abstract class Migration implements LoggerAwareInterface
+abstract class Migration
 {
 
 	/**
@@ -40,28 +36,6 @@ abstract class Migration implements LoggerAwareInterface
 	 * of other migrations.
 	 */
 	const UGLY = 2;
-
-	protected $log;
-
-	public function __construct(LoggerInterface $logger = null)
-	{
-		if ( is_null($logger) )
-		{
-			$logger = new NullLogger();
-		}
-
-		$this->setLogger($logger);
-	}
-
-	/**
-	 * Sets the logging interface to use.
-	 *
-	 * @param \Psr\Log\LoggerInterface $logger
-	 */
-	public function setLogger(LoggerInterface $logger)
-	{
-		$this->log = $logger;
-	}
 
 	/**
 	 * If this is set to true the migration will not be recorded as run and will
@@ -89,7 +63,7 @@ abstract class Migration implements LoggerAwareInterface
 	 */
 	public function dependencies()
 	{
-		return array();
+		return [];
 	}
 
 	/**

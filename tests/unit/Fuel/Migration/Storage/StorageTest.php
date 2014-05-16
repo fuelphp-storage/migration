@@ -31,8 +31,11 @@ class StorageTest extends Test
 	protected function _before()
 	{
 		$this->object = \Mockery::mock('Fuel\Migration\Storage\Storage[save, getPast]');
-		$this->object->shouldReceive('save')->andReturn(true);
-		$this->object->shouldReceive('getPast')->andReturn(true);
+		$this->object->shouldReceive('save')
+			->andReturn(true);
+
+		$this->object->shouldReceive('getPast')
+			->andReturn(true);
 	}
 
 	/**

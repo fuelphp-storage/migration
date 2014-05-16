@@ -10,10 +10,6 @@
 
 namespace Fuel\Migration;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\NullLogger;
-
 /**
  * This class is responsible for keeping a list of migrations to run and
  * working out their dependencies.
@@ -22,7 +18,7 @@ use Psr\Log\NullLogger;
  * @since   2.0
  * @author  Fuel Development Team
  */
-class DependencyCompiler implements LoggerAwareInterface
+class DependencyCompiler
 {
 
 	/**
@@ -51,39 +47,10 @@ class DependencyCompiler implements LoggerAwareInterface
 	 */
 	protected $storage;
 
-	/**
-	 * @var LoggerInterface
-	 */
-	protected $log;
-
-	public function __construct(StorageInterface $storage, LoggerInterface $logger = null)
+	public function __construct(StorageInterface $storage)
 	{
-		if ( is_null($logger) )
-		{
-			$logger = new NullLogger();
-		}
-
-		$this->setLogger($logger);
 		$this->storage = $storage;
 		$this->reset();
-	}
-
-	/**
-	 * Sets the logging interface to use.
-	 *
-	 * @param LoggerInterface $logger
-	 */
-	public function setLogger(LoggerInterface $logger)
-	{
-		$this->log = $logger;
-	}
-
-	/**
-	 * @return LoggerInterface
-	 */
-	public function getLogger()
-	{
-		return $this->log;
 	}
 
 	/**
@@ -121,7 +88,7 @@ class DependencyCompiler implements LoggerAwareInterface
 		// Create an instance of the migration to store and poke for more info
 		$class = $migration;
 		/** @var Migration $migration */
-		$migration = new $migration($this->log);
+		$migration = new $migration;
 
 		//Add the migration to the run stack and the debug stack
 		$this->runStack[$class] = $migration;
