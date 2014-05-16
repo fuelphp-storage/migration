@@ -18,7 +18,7 @@ namespace Fuel\Migration;
  * @since   2.0.0
  * @author  Fuel Development Team
  */
-class RecursiveDependency extends \Exception
+class RecursiveDependencyException extends \Exception
 {
 
 	protected $stack;

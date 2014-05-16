@@ -36,12 +36,9 @@ class MainTest extends Test
 		vfsStream::setup('fuelphpMigration');
 		$storageFile = vfsStream::url('fuelphpMigration/MainTest.tmp');
 
-		$this->object = new Main(array(
-			'storage' => array(
-				'type' => 'Fuel\Migration\Storage\File',
-				'location' => $storageFile,
-			),
-		));
+		$storage = new Storage\File(['location' => $storageFile]);
+
+		$this->object = new Main($storage);
 	}
 
 	/**

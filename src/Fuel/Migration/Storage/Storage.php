@@ -17,7 +17,7 @@ namespace Fuel\Migration\Storage;
  * @since   2.0
  * @author  Fuel Development Team
  */
-abstract class Storage
+abstract class Storage implements StorageInterface
 {
 
 	protected $newMigrations = array();

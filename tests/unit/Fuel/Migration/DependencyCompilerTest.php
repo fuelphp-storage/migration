@@ -72,7 +72,7 @@ class DependencyCompilerTest extends Test
 
 	/**
 	 * @covers            ::addMigration
-	 * @expectedException \Fuel\Migration\RecursiveDependency
+	 * @expectedException \Fuel\Migration\RecursiveDependencyException
 	 * @group             Migration
 	 */
 	public function testAddMigrationRecursive()
@@ -92,7 +92,7 @@ class DependencyCompilerTest extends Test
 		{
 			$this->object->addMigration('Fuel\Migration\MigrationRecursiveA');
 		}
-		catch ( RecursiveDependency $exc )
+		catch ( RecursiveDependencyException $exc )
 		{
 			$stack = $exc->getStack();
 		}

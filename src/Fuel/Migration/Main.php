@@ -11,10 +11,12 @@
 namespace Fuel\Migration;
 
 use Fuel\Common\Arr;
+use Fuel\Migration\Storage\StorageInterface;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LogLevel;
+use WebDriver\Storage;
 
 /**
  * Main entry point for running migrations
@@ -27,57 +29,52 @@ class Main implements LoggerAwareInterface
 {
 
 	/**
-	 * @var DependencyCompiler|null
+	 * @var DependencyCompiler
 	 */
-	protected $dc = null;
+	protected $dc;
 
 	/**
 	 * @var LoggerInterface
 	 */
-	protected $log = null;
+	protected $log;
 
 	/**
 	 * @var array
 	 */
-	protected $runStack = null;
+	protected $runStack;
 
 	/**
-	 * @var Storage\Storage
+	 * @var StorageInterface
 	 */
-	protected $storage = null;
+	protected $storage;
 
-	/**
-	 * @var array
-	 */
-	protected $config = array(
-		'storage' => array(
-			'type' => 'Fuel\Migration\Storage\File',
-		),
-	);
-
-	public function __construct($config = array())
+	public function __construct(StorageInterface $storage)
 	{
-		//Set a default file location
-		$this->config['storage']['location'] = __DIR__ . DIRECTORY_SEPARATOR . '../../../resources/migrations.list';
-		$this->config = Arr::merge($this->config, $config);
-
 		//Set up the dependency compiler
-		$storage = Arr::get($this->config, 'storage.instance', false);
-		$storageInstance = null;
-		if ( $storage === false )
-		{
-			$storageDriver = Arr::get($this->config, 'storage.type');
-
-			if ( !is_subclass_of($storageDriver, 'Fuel\Migration\Storage\Storage') )
-			{
-				throw new \InvalidArgumentException('Storage driver must extend Storage\Storage');
-			}
-			$storageInstance = new $storageDriver($this->config['storage']);
-		}
-		$this->storage = $storageInstance;
+		$this->setStorage($storage);
 
 		$this->setLogger(new NullLogger);
 		$this->dc = new DependencyCompiler($this->storage, $this->log);
+	}
+
+	/**
+	 * Sets the Storage logic class.
+	 *
+	 * @param StorageInterface $storage
+	 */
+	public function setStorage(StorageInterface $storage)
+	{
+		$this->storage = $storage;
+	}
+
+	/**
+	 * Gets the storage logic.
+	 *
+	 * @return StorageInterface
+	 */
+	public function getStorage()
+	{
+		return $this->storage;
 	}
 
 	/**
@@ -90,15 +87,6 @@ class Main implements LoggerAwareInterface
 	{
 		$this->log = $log;
 		return $this;
-	}
-
-	/**
-	 * Gets the storage instance that is being used.
-	 * @return Storage\Storage
-	 */
-	public function getStorage()
-	{
-		return $this->storage;
 	}
 
 	/**
@@ -127,7 +115,7 @@ class Main implements LoggerAwareInterface
 			{
 				$this->dc->addMigration($migration);
 			}
-			catch ( RecursiveDependency $exc )
+			catch ( RecursiveDependencyException $exc )
 			{
 				//Break and die here
 				$this->logRecursiveDepError($exc);
@@ -139,13 +127,15 @@ class Main implements LoggerAwareInterface
 
 		$this->log->info('Migrations to run in total: ' . count($toRun));
 
-		$this->runStack = array();
+		$this->runStack = [];
 
 		$totalMigrations = count($toRun);
 		//Start running the migrations
 
 		foreach ( $toRun as $class => $migration )
 		{
+			/** @var Migration $migration */
+
 			$result = $migration->up();
 
 			switch ( $result )
@@ -171,8 +161,10 @@ class Main implements LoggerAwareInterface
 
 			$this->runStack[$class] = $migration;
 			$this->storage->add($class);
-			$this->log->log($logFlag,
-				(count($this->runStack)) . '/' . $totalMigrations . ': ' . $class . ' ' . $status);
+			$this->log->log(
+				$logFlag,
+				(count($this->runStack)) . '/' . $totalMigrations . ': ' . $class . ' ' . $status
+			);
 
 			//If this is a bad migration then start the rollback process.
 			if ( $result == Migration::BAD )
@@ -186,11 +178,11 @@ class Main implements LoggerAwareInterface
 	}
 
 	/**
-	 * Logs out a RecursiveDependency exception and debug stacktrace
+	 * Logs out a RecursiveDependencyException exception and debug stack trace
 	 *
-	 * @param \Fuel\Migration\RecursiveDependency $exc
+	 * @param RecursiveDependencyException $exc
 	 */
-	public function logRecursiveDepError(RecursiveDependency $exc)
+	public function logRecursiveDepError(RecursiveDependencyException $exc)
 	{
 		$this->log->error('Recursive dependency detected, aborting!');
 		$debugStack = $exc->getStack();

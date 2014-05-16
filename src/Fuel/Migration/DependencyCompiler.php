@@ -10,7 +10,7 @@
 
 namespace Fuel\Migration;
 
-use Fuel\Migration\RecursiveDependency;
+use Fuel\Migration\RecursiveDependencyException;
 use Fuel\Migration\Storage\Storage;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -104,7 +104,7 @@ class DependencyCompiler implements LoggerAwareInterface
 			//Check if the dependency has been added already
 			if ( $this->migrationIsInStack($dependency) )
 			{
-				$exception = new RecursiveDependency('Recursive dependency detected!');
+				$exception = new RecursiveDependencyException('Recursive dependency detected!');
 				$exception->setStack($this->debugStack);
 				throw $exception;
 			}
