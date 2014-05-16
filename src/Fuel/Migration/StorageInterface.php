@@ -8,7 +8,7 @@
  * @copyright 2010 - 2014 Fuel Development Team
  */
 
-namespace Fuel\Migration\Storage;
+namespace Fuel\Migration;
 
 /**
  * Defines a common interface for storing run migrations.

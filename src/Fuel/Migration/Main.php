@@ -10,13 +10,10 @@
 
 namespace Fuel\Migration;
 
-use Fuel\Common\Arr;
-use Fuel\Migration\Storage\StorageInterface;
 use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LogLevel;
-use WebDriver\Storage;
 
 /**
  * Main entry point for running migrations
@@ -81,12 +78,10 @@ class Main implements LoggerAwareInterface
 	 * Sets the implementation to use for logging.
 	 *
 	 * @param  LoggerInterface $log PSR-3 compatible logging class to use
-	 * @return $this
 	 */
 	public function setLogger(LoggerInterface $log)
 	{
 		$this->log = $log;
-		return $this;
 	}
 
 	/**

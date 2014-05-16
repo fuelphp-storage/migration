@@ -10,6 +10,8 @@
 
 namespace Fuel\Migration\Storage;
 
+use Fuel\Migration\StorageInterface;
+
 /**
  * Defines a common interface for storing run migrations.
  *

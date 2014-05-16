@@ -13,8 +13,6 @@ namespace Fuel\Migration;
 use Codeception\TestCase\Test;
 use org\bovigo\vfs\vfsStream;
 
-require_once __DIR__ . '/../../test_migration_classes.php';
-
 /**
  * Tests for Main
  *
