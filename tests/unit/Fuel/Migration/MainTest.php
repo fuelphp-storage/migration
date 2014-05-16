@@ -11,6 +11,7 @@
 namespace Fuel\Migration;
 
 use Codeception\TestCase\Test;
+use Fuel\Migration\Storage\File;
 use org\bovigo\vfs\vfsStream;
 
 /**
@@ -31,10 +32,7 @@ class MainTest extends Test
 
 	protected function _before()
 	{
-		vfsStream::setup('fuelphpMigration');
-		$storageFile = vfsStream::url('fuelphpMigration/MainTest.tmp');
-
-		$storage = new Storage\File(['location' => $storageFile]);
+		$storage = $this->getNewFileStorage();
 
 		$this->object = new Main($storage);
 	}
@@ -74,6 +72,45 @@ class MainTest extends Test
 			[],
 			$this->object->getStorage()->get()
 		);
+	}
+
+	/**
+	 * @covers ::__construct
+	 * @covers ::getStorage
+	 * @covers ::setStorage
+	 * @group  Migration
+	 */
+	public function testGetAndSetStorage()
+	{
+		$storage = $this->getNewFileStorage();
+
+		$object = new Main($storage);
+
+		$this->assertEquals(
+			$storage,
+			$object->getStorage()
+		);
+
+		$newStorage = $this->getNewFileStorage();
+
+		$object->setStorage($newStorage);
+
+		$this->assertEquals(
+			$newStorage,
+			$object->getStorage()
+		);
+	}
+
+	/**
+	 * @return File
+	 */
+	protected function getNewFileStorage()
+	{
+		vfsStream::setup('fuelphpMigration');
+		$storageFile = vfsStream::url('fuelphpMigration/MainTest.tmp');
+
+		$storage = new File(['location' => $storageFile]);
+		return $storage;
 	}
 
 }
