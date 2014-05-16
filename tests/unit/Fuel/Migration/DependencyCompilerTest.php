@@ -11,8 +11,7 @@
 namespace Fuel\Migration;
 
 use Codeception\TestCase\Test;
-
-require_once __DIR__ . '/../../test_migration_classes.php';
+use Psr\Log\NullLogger;
 
 /**
  * Tests for DependencyCompiler
@@ -40,6 +39,29 @@ class DependencyCompilerTest extends Test
 	}
 
 	/**
+	 * @covers ::__construct
+	 * @covers ::setLogger
+	 * @covers ::getLogger
+	 * @group  Migration
+	 */
+	public function testGetAndSettingLogger()
+	{
+		$this->assertInstanceOf(
+			'\Psr\Log\NullLogger',
+			$this->object->getLogger()
+		);
+
+		$newLogger = new NullLogger;
+
+		$this->object->setLogger($newLogger);
+
+		$this->assertEquals(
+			$newLogger,
+			$this->object->getLogger()
+		);
+	}
+
+	/**
 	 * @covers ::addMigration
 	 * @covers ::getList
 	 * @group  Migration
@@ -54,6 +76,16 @@ class DependencyCompilerTest extends Test
 	}
 
 	/**
+	 * @covers            ::addMigration
+	 * @expectedException \InvalidArgumentException
+	 * @group             Migration
+	 */
+	public function testAddInvalidMigration()
+	{
+		$this->object->addMigration('\stdClass');
+	}
+
+	/**
 	 * @covers ::addMigration
 	 * @covers ::getList
 	 * @group  Migration
@@ -62,12 +94,15 @@ class DependencyCompilerTest extends Test
 	{
 		$this->object->addMigration('Fuel\Migration\MigrationWithDeps');
 
-		$this->assertTrue(array_key_exists(
-			'Fuel\Migration\MigrationNoDeps', $this->object->getList()
-		));
-		$this->assertTrue(array_key_exists(
-			'Fuel\Migration\MigrationWithDeps', $this->object->getList()
-		));
+		$this->assertArrayHasKey(
+			'Fuel\Migration\MigrationNoDeps',
+			$this->object->getList()
+		);
+
+		$this->assertArrayHasKey(
+			'Fuel\Migration\MigrationWithDeps',
+			$this->object->getList()
+		);
 	}
 
 	/**

@@ -10,8 +10,6 @@
 
 namespace Fuel\Migration;
 
-use Fuel\Migration\RecursiveDependencyException;
-use Fuel\Migration\Storage\Storage;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
@@ -27,13 +25,38 @@ use Psr\Log\NullLogger;
 class DependencyCompiler implements LoggerAwareInterface
 {
 
-	protected $runStack = array();
-	protected $debugStack = array();
-	protected $storage = null;
-	protected $oldMigrations = array();
-	protected $log = null;
+	/**
+	 * Keeps track of migrations that need to be run
+	 *
+	 * @var array
+	 */
+	protected $runStack = [];
 
-	public function __construct(Storage $storage, LoggerInterface $logger = null)
+	/**
+	 * Keeps track of the current tree of migrations to allow for fetching of call traces
+	 *
+	 * @var array
+	 */
+	protected $debugStack = [];
+
+	/**
+	 * Contains a list of migrations that have already been run
+	 *
+	 * @var array
+	 */
+	protected $oldMigrations = [];
+
+	/**
+	 * @var StorageInterface
+	 */
+	protected $storage;
+
+	/**
+	 * @var LoggerInterface
+	 */
+	protected $log;
+
+	public function __construct(StorageInterface $storage, LoggerInterface $logger = null)
 	{
 		if ( is_null($logger) )
 		{
@@ -48,11 +71,19 @@ class DependencyCompiler implements LoggerAwareInterface
 	/**
 	 * Sets the logging interface to use.
 	 *
-	 * @param \Psr\Log\LoggerInterface $logger
+	 * @param LoggerInterface $logger
 	 */
 	public function setLogger(LoggerInterface $logger)
 	{
 		$this->log = $logger;
+	}
+
+	/**
+	 * @return LoggerInterface
+	 */
+	public function getLogger()
+	{
+		return $this->log;
 	}
 
 	/**
@@ -76,13 +107,13 @@ class DependencyCompiler implements LoggerAwareInterface
 	 */
 	public function addMigration($migration)
 	{
-		if ( !is_subclass_of($migration, 'Fuel\Migration\Migration') )
+		if ( ! is_subclass_of($migration, 'Fuel\Migration\Migration') )
 		{
-			throw new \InvalidArgumentException($migration . ' should be a subclass of FuelPHP\Migration\Migration');
+			throw new \InvalidArgumentException($migration . ' should be a subclass of Fuel\Migration\Migration');
 		}
 
 		//Check if the migration has been run before
-		if ( !$this->shouldAddMigration($migration) )
+		if ( ! $this->shouldAddMigration($migration) )
 		{
 			return;
 		}
@@ -126,6 +157,11 @@ class DependencyCompiler implements LoggerAwareInterface
 		return array_reverse($this->runStack);
 	}
 
+	/**
+	 * Returns the current stack of migrations.
+	 *
+	 * @return array
+	 */
 	public function getDebugStack()
 	{
 		return $this->debugStack;
