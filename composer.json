@@ -22,7 +22,6 @@
 			"mikey179/vfsStream": "1.1.*"
 		},
 		"autoload": {
-			"psr-0": { "Fuel\\Migration": "src/" }
-		},
-		"minimum-stability": "dev"
+			"psr-4": { "Fuel\\Migration\\": "src/" }
+		}
 }
